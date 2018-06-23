@@ -105,10 +105,6 @@ do
 	pushd $CASEBASEPATH > /dev/null
 	output=$(. $file)
 	retcode=$?
-	if [[ "${SILENT}" -eq "0" ]]
-	then
-		printf "${output}" | sed '$d'
-	fi
 	popd > /dev/null
 
 	logfile="${output##*$'\n'}"

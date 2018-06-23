@@ -50,6 +50,10 @@ fi
 ResultLog=""
 
 function writef {
+	if [[ "${SILENT}" == "0" ]]
+	then
+		printf "$1\n"
+	fi
 	ResultLog="$ResultLog$1\n"
 }
 
