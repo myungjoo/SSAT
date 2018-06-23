@@ -27,8 +27,7 @@ fi
 
 testInit $1
 
-testResult 1 T1 "Dummy Test 1"
-testResult 1 T2 "Dummy Test 2"
-testResult 0 T3 "Dummy Test 3" 1
+testResult 1 TA "Dummy Test A"
+testResult 1 TB "Dummy Test B"
 
 report

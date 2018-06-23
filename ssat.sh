@@ -24,6 +24,34 @@ TESTCASE="runTest.sh"
 #
 SILENT=1
 
+function createTemplate {
+	if [[ -f "runTest.sh" ]]
+	then
+		printf "Cannot create runTest.sh here. The file already exists at $(pwd).\n\n"
+		exit 1
+	fi
+
+	echo -e "#!/usr/bin/env bash\n\
+if [[ \"\$SSATAPILOADED\" != \"1\" ]]\n\
+then\n\
+	SILENT=0\n\
+	INDEPENDENT=1\n\
+	search=\"ssat-api.sh\"\n\
+	source \$search\n\
+	printf \"\${Blue}Independent Mode\${NC}\\n\"\n\
+fi\n\
+testInit \$1 # You may replace this with Test Group Name\n\
+\n\
+#testResult 1 T1 \"Dummy Test1\"\n\
+#callTestSuccess gst-launch-1.0 \"-q videotestsrc ! videoconvert ! autovideosink\" T2 \"This may run indefinitely\"\n\
+#callCompareTest golden.log executeResult.log T3 \"The two files must be same\" 0\n\
+\n\
+report\n" > runTest.sh
+chmod a+x runTest.sh
+
+	exit 0
+}
+
 # Handle arguments
 POSITIONAL=()
 while [[ $# -gt 0 ]]
@@ -31,7 +59,7 @@ do
 	key="$1"
 	case $key in
 	-h|--help)
-		printf "usage: ${BASENAME} [--help] [<path>] [--testcase <filename>] [--nocolor] [--showstdout]\n\n"
+		printf "usage: ${BASENAME} [--help] [<path>] [--testcase <filename>] [--nocolor] [--showstdout] [--createtemplate]\n\n"
 		printf "These are common ${Red}ssat${NC} commands used:\n\n"
 		printf "Test all test-groups in the current ($(pwd)) directory, recursively\n"
 		printf "    (no options specified)\n"
@@ -53,6 +81,9 @@ do
 		printf "Show stdout of test cases\n"
 		printf "    --showstdout or -s\n"
 		printf "\n"
+		printf "Create a template 'runTest.sh' test group at your current directory\n"
+		printf "    --createtemplate or -c\n"
+		printf "\n"
 		printf "Shows this message\n"
 		printf "    --help or -h\n"
 		printf "    $ ${BASENAME} --help \n"
@@ -70,6 +101,10 @@ do
 	;;
 	-s|--showstdout)
 	SILENT=0
+	shift
+	;;
+	-c|--createtemplate)
+	createTemplate
 	shift
 	;;
 	*) # Unknown, which is probably target (the path to root-dir of test groups).
@@ -103,18 +138,17 @@ do
 	tmpfile=$(mktemp)
 
 	pushd $CASEBASEPATH > /dev/null
-	output=$(. $file)
+	output=$(. $file $CASEBASEPATH)
 	retcode=$?
 	popd > /dev/null
 
 	logfile="${output##*$'\n'}"
-
 	resultlog=$(<$logfile)
 	effectiveOutput=`printf "$resultlog" | sed '$d'`
 	log="$log$effectiveOutput\n"
 
 	lastline=`printf "${resultlog}" | sed '$!d'`
-	IFS=/
+	IFS=,
 	set $lastline
 	Ntc=$1
 	Npass=$2

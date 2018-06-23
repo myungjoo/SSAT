@@ -64,22 +64,27 @@ function report {
 	if (( ${_fail} == 0 ))
 	then
 		writef "${Green}==================================================${NC}"
-		writef "${LightGreen}[PASSED]${NC} Test Group ${Green}Passed${NC}"
+		writef "${LightGreen}[PASSED]${NC} Test Group $_group ${Green}Passed${NC}"
 	else
 		if (( ${_criticalFail} > 0 ))
 		then
 			writef "${Green}==================================================${NC}"
-			writef "${Red}[FAILED]${NC} Test Group has ${Red}failed cases ($_fail)${NC}"
+			writef "${Red}[FAILED]${NC} Test Group $_group has ${Red}failed cases ($_fail)${NC}"
 		else
 			writef "${Green}==================================================${NC}"
-			writef "${LightGreen}[PASSED]${NC} Test Group has ${Red}failed cases ($_fail), but they are not critical.${NC}"
+			writef "${LightGreen}[PASSED]${NC} Test Group $_group has ${Red}failed cases ($_fail), but they are not critical.${NC}"
 		fi
 	fi
 
-	writef "${_cases}/${_pass}/${_fail}"
-
-	echo "${ResultLog}" > $_filename
-	printf "$_filename\n"
+	if [[ "$INDEPENDENT" -eq "1" ]]
+	then
+	# do nothing
+		echo ""
+	else
+		writef "${_cases},${_pass},${_fail}"
+		echo "${ResultLog}" > $_filename
+		printf "$_filename\n"
+	fi
 
 	if (( ${_criticalFail} > 0 ))
 	then
@@ -95,6 +100,14 @@ function testInit {
 	_criticalFail=0
 	_cases=0
 	_filename=$(mktemp)
+	_group=`basename "$1"`
+	if [[ "${#_group}" -eq "0" ]]
+	then
+		_group="(Unspecified)"
+	fi
+
+	writef "${Green}==================================================${NC}"
+	writef "    Test Group ${Green}$_group${NC} Starts."
 }
 
 ##
