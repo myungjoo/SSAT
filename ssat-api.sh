@@ -142,7 +142,14 @@ function testResult {
 # @param $4 test case description
 # @param $5 set 1 if this is not critical (don't care if it's pass or fail)_
 function callTestSuccess {
-	echo NYI
+	callutput=$(. $1 $2)
+	retcode=$?
+	if (( ${retcode} == 0 ))
+	then
+		testResult 1 "$3" "$4" $5
+	else
+		testResult 0 "$3" "$4 ret($retcode)" $5
+	fi
 }
 
 ##
@@ -153,7 +160,14 @@ function callTestSuccess {
 # @param $4 test case description
 # @param $5 set 1 if this is not critical (don't care if it's pass or fail)_
 function callTestFail {
-	echo NYI
+	callutput=$(. $1 $2)
+	retcode=$?
+	if (( ${retcode} != 0 ))
+	then
+		testResult 1 "$3" "$4 ret($retcode)" $5
+	else
+		testResult 0 "$3" "$4" $5
+	fi
 }
 
 ##
@@ -165,7 +179,14 @@ function callTestFail {
 # @param $5 Expected exit code.
 # @param $6 set 1 if this is not critical (don't care if it's pass or fail)_
 function callTestExitEq {
-	echo NYI
+	callutput=$(. $1 $2)
+	retcode=$?
+	if (( ${retcode} == $5 ))
+	then
+		testResult 1 "$3" "$4" $6
+	else
+		testResult 0 "$3" "$4 ret($retcode)" $6
+	fi
 }
 
 ##
@@ -177,6 +198,14 @@ function callTestExitEq {
 # @param $5 0 if the size is expected to be equal as well. 1 if golden (result 1) might be smaller (will ignore rest of result 2). 2 if the opposite of 1. If $5 > 2, it denotes the max size of compared bytes. (compare the first $5 bytes only)
 # @param $6 set 1 if this is not critical (don't care if it's pass or fail)_
 function callCompareTest {
+	# Try cmp.
+	command -v cmp
+	if (( $? == 0 ))
+	then
+		# use cmp
+	else
+		# use internal logic (slower!)
+	fi
 	echo NYI
 }
 
