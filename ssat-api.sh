@@ -112,13 +112,25 @@ function testInit {
 
 ##
 # @brief Write Test Log
-# @param $1 1 = success / 0 = fail
+# @param $1 1 = success / 0 = fail ($5 is not 1)
 # @param $2 test case ID (short string)
 # @param $3 test case description
 # @param $4 set 1 if this is not critical (don't care if it's pass or fail)_
+# @param $5 set 1 if $1==0 is success and $1!=0 is fail.
 function testResult {
 	_cases=$((_cases+1))
-	if [[ "${1}" == "1" ]]
+	_good=0
+	if [[ "${5}" -eq "1" ]]; then
+		if [[ "${1}" -eq "0" ]]; then
+			_good=1
+		fi
+	else
+		if [[ "${1}" -eq "1" ]]; then
+			_good=1
+		fi
+	fi
+
+	if [[ "${_good}" -eq "1" ]]
 	then
 		writef "${LightGreen}[PASSED]${NC} ${Green}$2${NC}:$3${NC}"
 		_pass=$((_pass+1))
