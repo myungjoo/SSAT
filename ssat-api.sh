@@ -203,8 +203,10 @@ function callCompareTest {
 	if (( $? == 0 ))
 	then
 		# use cmp
+		echo NYI
 	else
 		# use internal logic (slower!)
+		echo NYI
 	fi
 	echo NYI
 }
