@@ -82,8 +82,8 @@ function report {
 		echo ""
 	else
 		writef "${_cases},${_pass},${_fail}"
-		echo "${ResultLog}" > $_filename
-		printf "$_filename\n"
+		echo "${ResultLog}" > ${_filename}
+		printf "${_filename}\n"
 	fi
 
 	if (( ${_criticalFail} > 0 ))
@@ -200,15 +200,112 @@ function callTestExitEq {
 function callCompareTest {
 	# Try cmp.
 	command -v cmp
+	output=0
 	if (( $? == 0 ))
 	then
 		# use cmp
 		echo NYI
+		if (( $5 == 0 )); then
+			# Size should be same as well.
+			cmp $1 $2
+			output=$?
+		elif (( $5 == 1 )); then
+			# Compare up to the size of golden
+			cmp -n `stat --printf="%s" $1` $1 $2
+			output=$?
+		elif (( $5 == 2 )); then
+			# Compare up to the size of test-run
+			cmp -n `stat --printf="%s" $2` $1 $2
+			output=$?
+		else
+			# Compare up to $5 bytes.
+			cmp -n `stat --printf="%s" $5` $1 $2
+			output=$?
+		fi
+		if (( ${output} == 0 )); then
+			output=1
+		else
+			output=0
+		fi
+		testResult $output "$3" "$4" $6
 	else
 		# use internal logic (slower!)
 		echo NYI
+		testResult 0 "$3" "Cannot test. cmp not found." $6
 	fi
-	echo NYI
+}
+
+########################################################
+## EXTENSION. GStreamer
+## @todo How to separate such "plugins"?
+########################################################
+
+##
+# @brief Execute gst-launch with given arguments
+# @param $1 gst-launch-1.0 Arguments
+# @param $2 test case ID
+# @param $3 set 1 if this is not critical (don't care if it's pass or fail)
+# @param $4 set 1 if this passes if gstLaunch fails.
+# @param $5 set 1 to enable PERFORMANCE test.
+function gstTest {
+	calloutput=$(gst-launch-1.0 -q $1)
+	retcode=$?
+	desired=0
+	if [[ "${4}" -eq "1" ]]; then
+		if [[ "${retcode}" -ne "0" ]]; then
+			desired=1
+		fi
+	else
+		if [[ "${retcode}" -eq "0" ]]; then
+			desired=1
+		fi
+	fi
+
+	if [[ "$desired" -eq "1" ]]; then
+		testResult 1 "$2" "gst-launch of case $2" $3
+	else
+		testResult 0 "$2" "gst-launch of case $2" $3
+	fi
+
+	if [[ "$5" -eq "1" ]]; then
+		if (( ${#GST_DEBUG_DUMP_DOT_DIR} -le 1 )); then
+			GST_DEBUG_DUMP_DOT_DIR="./performance"
+		fi
+		dot -Tpng $GST_DEBUG_DUMP_DOT_DIR/*.PLAYING_PAUSED.dot > $GST_DEBUG_DUMP_DOT_DIR/debug/$base/$2.png
+		gst-report-1.0 --dot $GST_DEBUG_DUMP_DOT_DIR/*.gsttrace | dot -Tsvg > $GST_DEBUG_DUMP_DOT_DIR/profile/$base/$2.svg
+		rm -f $GST_DEBUG_DUMP_DOT_DIR/*.dot
+		rm -f $GST_DEBUG_DUMP_DOT_DIR/*.gsttrace
+	fi
+}
+
+##
+# @brief Convert all *.bmp to *.png
+#
+# @todo macronice "bmp2png" searching.
+function convertBMP2PNG {
+	tool="bmp2png"
+	if [ -x bmp2png ]; then
+		tool="bmp2png"
+	else
+		if [ -x ../bmp2png ]; then
+			tool="../bmp2png"
+		else
+			if [ -x ../../bmp2png ]; then
+				tool="../../bmp2png"
+			else
+				tool="../../../bmp2png"
+				# Try this and die if fails
+			fi
+		fi
+	fi
+	for X in `ls *.bmp`
+	do
+		if [[ $X  = *"GRAY8"* ]]; then
+			$tool $X --GRAY8
+		else
+			$tool $X
+		fi
+	done
 }
 
 SSATAPILOADED=1
