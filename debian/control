@@ -1,0 +1,13 @@
+Source: ssat
+Section: devel
+Priority: optional
+Maintainer: MyungJoo Ham <myungjoo.ham@samsung.com>
+Build-Depends: bash, debhelper (>=9)
+Standards-Version: 3.9.6
+Homepage: https://github.com/myungjoo/SSAT/
+
+Package: ssat
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Shell Script Automated Tester
+ This tests test scripts names "runTest.sh" with the given APIs in ssat-api.sh.

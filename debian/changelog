@@ -1,0 +1,5 @@
+ssat (1.0.0) stable; urgency=medium
+
+  * Initial debian dist files added
+
+ -- MyungJoo Ham <myungjoo.ham@samsung.com>  Tue, 30 Oct 2018 17:10:00 +0900
