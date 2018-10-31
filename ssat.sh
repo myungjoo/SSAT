@@ -181,10 +181,12 @@ printf "==================================================\n"
 
 if (( ${TNgroupfail} == 0 ))
 then
-	printf "${LightGreen}[PASSED] ${Blue}All Test Groups (${TNgroup}) Passed!${NC}\n\n"
+	printf "${LightGreen}[PASSED] ${Blue}All Test Groups (${TNgroup}) Passed!${NC}\n"
+	printf "         TC Passed: ${TNtcpass} / Failed: ${TNtcfail}\n\n";
 	exit 0
 else
-	printf "${Red}[FAILED] ${Purple}There are failed test groups! (${TNgroupfail})${NC}\n\n"
+	printf "${Red}[FAILED] ${Purple}There are failed test groups! (${TNgroupfail})${NC}\n"
+	printf "         TC Passed: ${TNtcpass} / Failed: ${TNtcfail}\n\n";
 	exit 1
 fi
 # gather reports & publish them.
