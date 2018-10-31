@@ -7,6 +7,7 @@ Packager:	MyungJoo Ham <myungjoo.ham@samsung.com>
 License:	Apache-2.0
 Source0:	ssat-%{version}.tar.gz
 Source1001:	ssat.manifest
+BuildArch:	noarch
 
 Requires:	bash
 
