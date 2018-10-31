@@ -211,12 +211,11 @@ function callTestExitEq {
 # @param $6 set 1 if this is not critical (don't care if it's pass or fail)_
 function callCompareTest {
 	# Try cmp.
-	command -v cmp
 	output=0
+	command -v cmp
 	if (( $? == 0 ))
 	then
 		# use cmp
-		echo NYI
 		if (( $5 == 0 )); then
 			# Size should be same as well.
 			cmp $1 $2

@@ -109,6 +109,7 @@ do
 	;;
 	*) # Unknown, which is probably target (the path to root-dir of test groups).
 	TARGET="$1"
+	shift
 	esac
 done
 
@@ -153,6 +154,7 @@ do
 	Ntc=$1
 	Npass=$2
 	Nfail=$3
+	unset IFS
 
 	TNtc=$((TNtc+Ntc))
 	TNtcpass=$((TNtcpass+Npass))
