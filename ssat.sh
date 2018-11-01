@@ -7,6 +7,9 @@
 # @brief This executes test groups and reports aggregated test results.
 # @exit 0 if all PASSED. Positive if some FAILED.
 # @dependency sed
+# @dependency date
+# @dependency cmp
+# @todo Separate GStreamer related functions as plugins
 #
 # If there is no arguments specified, this will search for all "runTest.sh" in
 # the subdirectory of this file and regard them as the test groups.
@@ -23,7 +26,12 @@ TESTCASE="runTest.sh"
 
 #
 SILENT=1
+date=`date +"%b %d %Y"`
 
+##
+# Note that the generated template has no license.
+# The SSAT user may put their own license for the generated files.
+# I hereby grant the right to relicense the generated files.
 function createTemplate {
 	if [[ -f "runTest.sh" ]]
 	then
@@ -32,6 +40,12 @@ function createTemplate {
 	fi
 
 	echo -e "#!/usr/bin/env bash\n\
+##\n\
+# @file runTest.sh\n\
+# @author MyungJoo Ham <myungjoo.ham@gmail.com>\n\
+# @date ${date}\n\
+# @brief This is a template file for SSAT test cases. You may designate your own license.\n\
+#\n\
 if [[ \"\$SSATAPILOADED\" != \"1\" ]]\n\
 then\n\
 	SILENT=0\n\
