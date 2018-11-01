@@ -1,23 +1,37 @@
 #!/usr/bin/env bash
 ##
-# @file ssat.sh
-# @author MyungJoo Ham <myungjoo.ham@gmail.com>
-# @date Jun 22 2018
-# @license Apache-2.0
-# @brief This executes test groups and reports aggregated test results.
-# @exit 0 if all PASSED. Positive if some FAILED.
-# @dependency sed
-# @dependency date
-# @dependency cmp
-# @todo Separate GStreamer related functions as plugins
-#
-# If there is no arguments specified, this will search for all "runTest.sh" in
-# the subdirectory of this file and regard them as the test groups.
-#
-# If a testgroup (runTest.sh) returns 0 while there are failed testcase,
-# it implies that the failed testcases may be ignored and it's good to go.
-#
-# If --help or -h is given, this will show detailed description.
+## @file ssat.sh
+## @author MyungJoo Ham <myungjoo.ham@gmail.com>
+## @date Jun 22 2018
+## @brief This executes test groups and reports aggregated test results.
+## @return 0 if all PASSED. Positive if some FAILED.
+## @todo Separate GStreamer related functions as plugins
+##
+## This uses sed, date, cmp
+##
+## If there is no arguments specified, this will search for all "runTest.sh" in
+## the subdirectory of this file and regard them as the test groups.
+##
+## If a testgroup (runTest.sh) returns 0 while there are failed testcase,
+## it implies that the failed testcases may be ignored and it's good to go.
+##
+## If --help or -h is given, this will show detailed description.
+
+##
+## @mainpage SSAT
+## @section intro        Introduction
+## - Introduction     :  Shell Script Automated Tester
+## @section Program      Program Name
+## - Program Name     :  ssat
+## - Program Details  :  SSAT is a software testing framework for test cases written in BASH shell scripts.
+##   It can search for test scripts recursively from a given path and summarize the test results.
+##   If there is any "critical" fail, ssat will return non-zero values on its exit.
+## @section INOUTPUT     Input/output data
+## - INPUT            :  Test Cases (If not supplied, the current path is the root of test cases)
+## - OUTPUT           :  Summary of test results to stdout. Exit code of 0 if success, non-zero if not success.
+## @section CREATEINFO   Code information
+## - Initial date     :  2018/06/22
+## - Version          :  1.0.0
 
 TARGET=$(pwd)
 BASEPATH=`dirname "$0"`
@@ -28,11 +42,13 @@ TESTCASE="runTest.sh"
 SILENT=1
 date=`date +"%b %d %Y"`
 
+## @fn createTemplate()
+## @brief Generate runTest template file
 ##
-# Note that the generated template has no license.
-# The SSAT user may put their own license for the generated files.
-# I hereby grant the right to relicense the generated files.
-function createTemplate {
+## Note that the generated template has no license.
+## The SSAT user may put their own license for the generated files.
+## I hereby grant the right to relicense the generated files.
+function createTemplate() {
 	if [[ -f "runTest.sh" ]]
 	then
 		printf "Cannot create runTest.sh here. The file already exists at $(pwd).\n\n"
@@ -41,10 +57,10 @@ function createTemplate {
 
 	echo -e "#!/usr/bin/env bash\n\
 ##\n\
-# @file runTest.sh\n\
-# @author MyungJoo Ham <myungjoo.ham@gmail.com>\n\
-# @date ${date}\n\
-# @brief This is a template file for SSAT test cases. You may designate your own license.\n\
+## @file runTest.sh\n\
+## @author MyungJoo Ham <myungjoo.ham@gmail.com>\n\
+## @date ${date}\n\
+## @brief This is a template file for SSAT test cases. You may designate your own license.\n\
 #\n\
 if [[ \"\$SSATAPILOADED\" != \"1\" ]]\n\
 then\n\

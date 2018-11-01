@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 ##
-# @file ssat-api.sh
-# @author MyungJoo Ham <myungjoo.ham@gmail.com>
-# @date Jun 22 2018
-# @license Apache-2.0
-# @brief This is API set for SSAT (Shell Script Automated Tester)
-#
+## @file ssat-api.sh
+## @author MyungJoo Ham <myungjoo.ham@gmail.com>
+## @date Jun 22 2018
+## @brief This is API set for SSAT (Shell Script Automated Tester)
+##
 
 if [[ "$nocolor" != "1" ]]
 then
@@ -49,7 +48,11 @@ fi
 
 ResultLog=""
 
-function writef {
+## @fn writef()
+## @private
+## @param $1 the string to be printed.
+## @brief Prepare report result
+function writef() {
 	if [[ "${SILENT}" == "0" ]]
 	then
 		printf "$1\n"
@@ -57,10 +60,9 @@ function writef {
 	ResultLog="$ResultLog$1\n"
 }
 
-##
-# @brief Report results of a test group (a "runTest.sh" in a testee directory)
-#
-function report {
+## @fn report()
+## @brief Report results of a test group (a "runTest.sh" in a testee directory)
+function report() {
 	if (( ${_fail} == 0 ))
 	then
 		writef "${Green}==================================================${NC}"
@@ -94,7 +96,9 @@ function report {
 	fi
 }
 
-function testInit {
+## @fn testInit()
+## @brief Initialize runTest.sh shell test case
+function testInit() {
 	_pass=0
 	_fail=0
 	_criticalFail=0
@@ -110,14 +114,14 @@ function testInit {
 	writef "    Test Group ${Green}$_group${NC} Starts."
 }
 
-##
-# @brief Write Test Log
-# @param $1 1 = success / 0 = fail ($5 is not 1)
-# @param $2 test case ID (short string)
-# @param $3 test case description
-# @param $4 set 1 if this is not critical (don't care if it's pass or fail)_
-# @param $5 set 1 if $1==0 is success and $1!=0 is fail.
-function testResult {
+## @fn testResult()
+## @brief Write Test Log
+## @param $1 1 = success / 0 = fail ($5 is not 1)
+## @param $2 test case ID (short string)
+## @param $3 test case description
+## @param $4 set 1 if this is not critical (don't care if it's pass or fail)_
+## @param $5 set 1 if $1==0 is success and $1!=0 is fail.
+function testResult() {
 	_cases=$((_cases+1))
 	_good=0
 	if [[ "${5}" -eq "1" ]]; then
@@ -146,14 +150,14 @@ function testResult {
 	fi
 }
 
-##
-# @brief Call Test Case (a shell script), expected exit = 0
-# @param $1 Full path to the executable (e.g., ~/script/a1.sh)
-# @param $2 Full string of the arguments to $1 (e.g., "-q -n --dryrun")
-# @param $3 test case ID
-# @param $4 test case description
-# @param $5 set 1 if this is not critical (don't care if it's pass or fail)_
-function callTestSuccess {
+## @fn callTestSuccess()
+## @brief Call Test Case (a shell script), expected exit = 0
+## @param $1 Full path to the executable (e.g., ~/script/a1.sh)
+## @param $2 Full string of the arguments to $1 (e.g., "-q -n --dryrun")
+## @param $3 test case ID
+## @param $4 test case description
+## @param $5 set 1 if this is not critical (don't care if it's pass or fail)_
+function callTestSuccess() {
 	callutput=$(. $1 $2)
 	retcode=$?
 	if (( ${retcode} == 0 ))
@@ -164,14 +168,14 @@ function callTestSuccess {
 	fi
 }
 
-##
-# @brief Call Test Case (a shell script), expected exit != 0
-# @param $1 Full path to the executable (e.g., ~/script/a1.sh)
-# @param $2 Full string of the arguments to $1 (e.g., "-q -n --dryrun")
-# @param $3 test case ID
-# @param $4 test case description
-# @param $5 set 1 if this is not critical (don't care if it's pass or fail)_
-function callTestFail {
+## @fn callTestFail()
+## @brief Call Test Case (a shell script), expected exit != 0
+## @param $1 Full path to the executable (e.g., ~/script/a1.sh)
+## @param $2 Full string of the arguments to $1 (e.g., "-q -n --dryrun")
+## @param $3 test case ID
+## @param $4 test case description
+## @param $5 set 1 if this is not critical (don't care if it's pass or fail)_
+function callTestFail() {
 	callutput=$(. $1 $2)
 	retcode=$?
 	if (( ${retcode} != 0 ))
@@ -182,15 +186,15 @@ function callTestFail {
 	fi
 }
 
-##
-# @brief Call Test Case (a shell script), expected exit == $5
-# @param $1 Full path to the executable (e.g., ~/script/a1.sh)
-# @param $2 Full string of the arguments to $1 (e.g., "-q -n --dryrun")
-# @param $3 test case ID
-# @param $4 test case description
-# @param $5 Expected exit code.
-# @param $6 set 1 if this is not critical (don't care if it's pass or fail)_
-function callTestExitEq {
+## @fn callTestExitEq()
+## @brief Call Test Case (a shell script), expected exit == $5
+## @param $1 Full path to the executable (e.g., ~/script/a1.sh)
+## @param $2 Full string of the arguments to $1 (e.g., "-q -n --dryrun")
+## @param $3 test case ID
+## @param $4 test case description
+## @param $5 Expected exit code.
+## @param $6 set 1 if this is not critical (don't care if it's pass or fail)_
+function callTestExitEq() {
 	callutput=$(. $1 $2)
 	retcode=$?
 	if (( ${retcode} == $5 ))
@@ -201,15 +205,15 @@ function callTestExitEq {
 	fi
 }
 
-##
-# @brief Compare two result files expected to be equal
-# @param $1 Path to result 1 (golden)
-# @param $2 Path to result 2 (test run)
-# @param $3 test case ID
-# @param $4 test case description
-# @param $5 0 if the size is expected to be equal as well. 1 if golden (result 1) might be smaller (will ignore rest of result 2). 2 if the opposite of 1. If $5 > 2, it denotes the max size of compared bytes. (compare the first $5 bytes only)
-# @param $6 set 1 if this is not critical (don't care if it's pass or fail)_
-function callCompareTest {
+## @fn callCompareTest()
+## @brief Compare two result files expected to be equal
+## @param $1 Path to result 1 (golden)
+## @param $2 Path to result 2 (test run)
+## @param $3 test case ID
+## @param $4 test case description
+## @param $5 0 if the size is expected to be equal as well. 1 if golden (result 1) might be smaller (will ignore rest of result 2). 2 if the opposite of 1. If $5 > 2, it denotes the max size of compared bytes. (compare the first $5 bytes only)
+## @param $6 set 1 if this is not critical (don't care if it's pass or fail)_
+function callCompareTest() {
 	# Try cmp.
 	output=0
 	command -v cmp
@@ -246,19 +250,15 @@ function callCompareTest {
 	fi
 }
 
-########################################################
-## EXTENSION. GStreamer
-## @todo How to separate such "plugins"?
-########################################################
-
-##
-# @brief Execute gst-launch with given arguments
-# @param $1 gst-launch-1.0 Arguments
-# @param $2 test case ID
-# @param $3 set 1 if this is not critical (don't care if it's pass or fail)
-# @param $4 set 1 if this passes if gstLaunch fails.
-# @param $5 set 1 to enable PERFORMANCE test.
-function gstTest {
+## @fn gstTest()
+## @brief Execute gst-launch with given arguments
+## @todo Separate this function to "gstreamer extension plugin"
+## @param $1 gst-launch-1.0 Arguments
+## @param $2 test case ID
+## @param $3 set 1 if this is not critical (don't care if it's pass or fail)
+## @param $4 set 1 if this passes if gstLaunch fails.
+## @param $5 set 1 to enable PERFORMANCE test.
+function gstTest() {
 	calloutput=$(gst-launch-1.0 -q $1)
 	retcode=$?
 	desired=0
@@ -289,11 +289,11 @@ function gstTest {
 	fi
 }
 
-##
-# @brief Convert all *.bmp to *.png
-#
-# @todo macronice "bmp2png" searching.
-function convertBMP2PNG {
+## @fn convertBMP2PNG()
+## @brief Convert all *.bmp to *.png in the current directory
+## @todo macronice "bmp2png" searching.
+## @todo Separate this function to "gstreamer extension plugin"
+function convertBMP2PNG() {
 	tool="bmp2png"
 	if [ -x bmp2png ]; then
 		tool="bmp2png"
