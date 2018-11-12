@@ -40,6 +40,7 @@ TESTCASE="runTest.sh"
 
 #
 SILENT=1
+PROGRESS=0
 date=`date +"%b %d %Y"`
 
 ## @fn createTemplate()
@@ -114,6 +115,9 @@ do
 		printf "Create a template 'runTest.sh' test group at your current directory\n"
 		printf "    --createtemplate or -c\n"
 		printf "\n"
+		printf "Show progress during execution\n"
+		printf "    --progress or -p\n"
+		printf "\n"
 		printf "Shows this message\n"
 		printf "    --help or -h\n"
 		printf "    $ ${BASENAME} --help \n"
@@ -135,6 +139,10 @@ do
 	;;
 	-c|--createtemplate)
 	createTemplate
+	shift
+	;;
+	-p|--progress)
+	PROGRESS=1
 	shift
 	;;
 	*) # Unknown, which is probably target (the path to root-dir of test groups).
@@ -168,6 +176,9 @@ do
 	Nfail=0
 	tmpfile=$(mktemp)
 
+	if [[ "$PROGRESS" -eq "1" ]]; then
+		printf "[Starting] $CASENAME\n"
+	fi
 	pushd $CASEBASEPATH > /dev/null
 	output=$(. $file $CASEBASEPATH)
 	retcode=$?
