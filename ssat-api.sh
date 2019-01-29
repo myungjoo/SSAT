@@ -122,6 +122,11 @@ function testInit() {
 ## @param $4 set 1 if this is not critical (don't care if it's pass or fail)_
 ## @param $5 set 1 if $1==0 is success and $1!=0 is fail.
 function testResult() {
+	if [[ "${PROGRESS}" -eq "1" ]]
+	then
+		echo "Case ${2}(${3}) report ${1}" > /dev/stderr
+	fi
+
 	_cases=$((_cases+1))
 	_good=0
 	if [[ "${5}" -eq "1" ]]; then
