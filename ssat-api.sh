@@ -264,7 +264,7 @@ function callCompareTest() {
 ## @param $4 set 1 if this passes if gstLaunch fails.
 ## @param $5 set 1 to enable PERFORMANCE test.
 function gstTest() {
-	calloutput=$(gst-launch-1.0 -q $1)
+	calloutput=$(gst-launch-1.0 -f -q $1)
 	retcode=$?
 	desired=0
 	if [[ "${4}" -eq "1" ]]; then
