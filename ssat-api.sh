@@ -85,7 +85,7 @@ function report() {
 	else
 		writef "${_cases},${_pass},${_fail}"
 		echo "${ResultLog}" > ${_filename}
-		printf "${_filename}\n"
+		printf "\n${_filename}\n"
 	fi
 
 	if (( ${_criticalFail} > 0 ))
