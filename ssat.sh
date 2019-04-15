@@ -41,6 +41,7 @@ TESTCASE="runTest.sh"
 #
 SILENT=1
 PROGRESS=0
+VALGRIND=0
 date=`date +"%b %d %Y"`
 
 ## @fn createTemplate()
@@ -118,6 +119,9 @@ do
 		printf "Show progress during execution\n"
 		printf "    --progress or -p\n"
 		printf "\n"
+		printf "Enable valgrind to perform memcheck\n"
+		printf "    --enable-valgrind or -vg\n"
+		printf "\n"
 		printf "Shows this message\n"
 		printf "    --help or -h\n"
 		printf "    $ ${BASENAME} --help \n"
@@ -143,6 +147,10 @@ do
 	;;
 	-p|--progress)
 	PROGRESS=1
+	shift
+	;;
+	-vg|--enable-valgrind)
+	VALGRIND=1
 	shift
 	;;
 	*) # Unknown, which is probably target (the path to root-dir of test groups).
