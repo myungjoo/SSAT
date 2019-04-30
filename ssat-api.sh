@@ -222,7 +222,8 @@ function callCompareTest() {
 	# Try cmp.
 	output=0
 	command -v cmp
-	if (( $? == 0 ))
+	# If cmp is symlink, then it could be from busybox and it does not support "-n" option
+	if [[ $? == 0 && ! -L $(which cmp) ]]
 	then
 		# use cmp
 		if (( $5 == 0 )); then
@@ -249,9 +250,21 @@ function callCompareTest() {
 		fi
 		testResult $output "$3" "$4" $6
 	else
-		# use internal logic (slower!)
-		echo NYI
-		testResult 0 "$3" "Cannot test. cmp not found." $6
+	    # use internal logic (slower!)
+	    bufsize=`stat --printf="%s" $1`
+	    if (( $5 == 2 )); then
+		bufsize=`stat --printf="%s" $2`
+	    else
+		bufsize=$5
+	    fi
+	    diff <(dd bs=1 count=$bufsize if=$1 &>/dev/null) <(dd bs=1 count=$bufsize if=$2 &>/dev/null)
+	    output=$?
+	    if (( ${output} == 0 )); then
+		output=1
+	    else
+		output=0
+	    fi
+	    testResult $output "$3" "$4" $6
 	fi
 }
 
