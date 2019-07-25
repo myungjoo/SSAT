@@ -63,7 +63,7 @@ function writef() {
 ## @fn report()
 ## @brief Report results of a test group (a "runTest.sh" in a testee directory)
 function report() {
-	if (( ${_fail} == 0 ))
+	if (( ${_fail} == 0 && ${_criticalFail} == 0 ))
 	then
 		writef "${Green}==================================================${NC}"
 		writef "${LightGreen}[PASSED]${NC} Test Group $_group ${Green}Passed${NC}"
