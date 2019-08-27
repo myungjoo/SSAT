@@ -48,6 +48,14 @@ fi
 
 ResultLog=""
 
+# Platform dependent variables
+KernelName=$(uname -s)
+if [[ "${KernelName}" == "Darwin" ]]; then
+	StatCmd_GetSize="stat -f %z"
+else
+	StatCmd_GetSize="stat --printf=%s"
+fi
+
 ## @fn writef()
 ## @private
 ## @param $1 the string to be printed.
@@ -232,15 +240,15 @@ function callCompareTest() {
 			output=$?
 		elif (( $5 == 1 )); then
 			# Compare up to the size of golden
-			cmp -n `stat --printf="%s" $1` $1 $2
+			cmp -n `${StatCmd_GetSize} $1` $1 $2
 			output=$?
 		elif (( $5 == 2 )); then
 			# Compare up to the size of test-run
-			cmp -n `stat --printf="%s" $2` $1 $2
+			cmp -n `${StatCmd_GetSize} $2` $1 $2
 			output=$?
 		else
 			# Compare up to $5 bytes.
-			cmp -n `stat --printf="%s" $5` $1 $2
+			cmp -n `${StatCmd_GetSize} $5` $1 $2
 			output=$?
 		fi
 		if (( ${output} == 0 )); then
@@ -251,9 +259,9 @@ function callCompareTest() {
 		testResult $output "$3" "$4" $6
 	else
 	    # use internal logic (slower!)
-	    bufsize=`stat --printf="%s" $1`
+	    bufsize=`${StatCmd_GetSize} $1`
 	    if (( $5 == 2 )); then
-		bufsize=`stat --printf="%s" $2`
+		bufsize=`${StatCmd_GetSize} $2`
 	    else
 		bufsize=$5
 	    fi
