@@ -52,8 +52,10 @@ ResultLog=""
 KernelName=$(uname -s)
 if [[ "${KernelName}" == "Darwin" ]]; then
 	StatCmd_GetSize="stat -f %z"
+	SO_EXT="dylib"
 else
 	StatCmd_GetSize="stat --printf=%s"
+	SO_EXT="so"
 fi
 
 ## @fn writef()
