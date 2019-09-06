@@ -290,7 +290,11 @@ function gstTest() {
 	if [[ "$VALGRIND" -eq "1" ]]; then
 		calloutputprefix='valgrind --track-origins=yes'
 	fi
-	calloutput=$(eval $calloutputprefix gst-launch-1.0 -f -q $1)
+	if [[ "${SILENT}" -eq "1" ]]; then
+		calloutput=$(eval $calloutputprefix gst-launch-1.0 -f -q $1 &> /dev/null)
+	else
+		calloutput=$(eval $calloutputprefix gst-launch-1.0 -f -q $1)
+	fi
 
 	retcode=$?
 	desired=0
