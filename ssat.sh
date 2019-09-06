@@ -219,11 +219,12 @@ do
 		groupLog="${groupLog}${Red}[FAILED]${NC} ${Blue}${CASENAME}${NC} ($Npass passed among $Ntc cases)\n"
 	fi
 
+	printf "$log\n"
+	log=""
 done < <(find $TARGET -name $TESTCASE -print0)
 
 printf "\n\n==================================================\n\n"
 
-printf "$log\n"
 printf "==================================================\n\n"
 printf "$groupLog"
 printf "==================================================\n"
