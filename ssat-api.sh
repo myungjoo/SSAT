@@ -84,7 +84,7 @@ function report() {
 			writef "${Red}[FAILED]${NC} Test Group $_group has ${Red}failed cases ($_fail)${NC}"
 		else
 			writef "${Green}==================================================${NC}"
-			writef "${LightGreen}[PASSED]${NC} Test Group $_group has ${Red}failed cases ($_fail), but they are not critical.${NC}"
+			writef "${LightGreen}[PASSED]${NC} Test Group $_group has ${Red}failed cases ($_fail), but they are ignorable cases and not critical.${NC}"
 		fi
 	fi
 
@@ -93,7 +93,9 @@ function report() {
 	# do nothing
 		echo ""
 	else
-		writef "${_cases},${_pass},${_fail}"
+		_ignore=$((_fail-_criticalFail))
+		_fail=${criticalFail}
+		writef "${_cases},${_pass},${_fail},${_ignore}"
 		echo "${ResultLog}" > ${_filename}
 		printf "\n${_filename}\n"
 	fi
@@ -157,7 +159,7 @@ function testResult() {
 		_fail=$((_fail+1))
 		if [[ "${4}" == "1" ]]
 		then
-			writef "${Purple}[FAILED][Ignorable] $2${NC}:${Purple}$3${NC}"
+			writef "${Purple}[IGNORED] $2${NC}:${Purple}$3${NC}"
 		else
 			writef "${Red}[FAILED][Critical] $2${NC}:${Purple}$3${NC}"
 			_criticalFail=$((_criticalFail+1))

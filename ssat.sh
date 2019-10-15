@@ -169,6 +169,7 @@ fi
 TNtc=0
 TNtcpass=0
 TNtcfail=0
+TNtcignore=0
 TNgroup=0
 TNgrouppass=0
 TNgroupfail=0
@@ -203,11 +204,13 @@ do
 	Ntc=$1
 	Npass=$2
 	Nfail=$3
+	Nignore=$4
 	unset IFS
 
 	TNtc=$((TNtc+Ntc))
 	TNtcpass=$((TNtcpass+Npass))
 	TNtcfail=$((TNtcfail+Nfail))
+	TNtcignore=$((TNtcignore+Nignore))
 
 	TNgroup=$((TNgroup+1))
 	if [[ "$retcode" -eq "0" ]]
@@ -232,11 +235,11 @@ printf "==================================================\n"
 if (( ${TNgroupfail} == 0 ))
 then
 	printf "${LightGreen}[PASSED] ${Blue}All Test Groups (${TNgroup}) Passed!${NC}\n"
-	printf "         TC Passed: ${TNtcpass} / Failed: ${TNtcfail}\n\n";
+	printf "         TC Passed: ${TNtcpass} / Failed: ${TNtcfail} / Ignored: ${TNtcignore}\n\n";
 	exit 0
 else
 	printf "${Red}[FAILED] ${Purple}There are failed test groups! (${TNgroupfail})${NC}\n"
-	printf "         TC Passed: ${TNtcpass} / Failed: ${TNtcfail}\n\n";
+	printf "         TC Passed: ${TNtcpass} / Failed: ${TNtcfail} / Ignored: ${TNtcignore}\n\n";
 	exit 1
 fi
 # gather reports & publish them.
