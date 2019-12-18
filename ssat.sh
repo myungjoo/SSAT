@@ -37,6 +37,7 @@ TARGET=$(pwd)
 BASEPATH=`dirname "$0"`
 BASENAME=`basename "$0"`
 TESTCASE="runTest.sh"
+SUMMARYFILENAME=""
 
 #
 SILENT=1
@@ -125,6 +126,9 @@ do
 		printf "Shows this message\n"
 		printf "    --help or -h\n"
 		printf "    $ ${BASENAME} --help \n"
+		printf "\n"
+		printf "Write result summary as a file\n"
+		printf "    --summary <filename>\n"
 		printf "\n\n"
 		exit 0
 	;;
@@ -151,6 +155,11 @@ do
 	;;
 	-vg|--enable-valgrind)
 	VALGRIND=1
+	shift
+	;;
+	--summary)
+	SUMMARYFILENAME="$2"
+	shift
 	shift
 	;;
 	*) # Unknown, which is probably target (the path to root-dir of test groups).
@@ -232,6 +241,10 @@ printf "==================================================\n\n"
 printf "$groupLog"
 printf "==================================================\n"
 
+if [ "${SUMMARYFILENAME}" != "" ]
+then
+	echo "passed=${TNtcpass}, failed=${TNtcfail}, ignored=${TNtcignore}" > "${SUMMARYFILENAME}"
+fi
 if (( ${TNgroupfail} == 0 ))
 then
 	printf "${LightGreen}[PASSED] ${Blue}All Test Groups (${TNgroup}) Passed!${NC}\n"
