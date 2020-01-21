@@ -94,7 +94,7 @@ function report() {
 		echo ""
 	else
 		_ignore=$((_fail-_criticalFail))
-		_fail=${criticalFail}
+		_fail=${_criticalFail}
 		writef "${_cases},${_pass},${_fail},${_ignore}"
 		echo "${ResultLog}" > ${_filename}
 		printf "\n${_filename}\n"
