@@ -263,16 +263,19 @@ printf "==================================================\n\n"
 printf "$groupLog"
 printf "==================================================\n"
 
-if [ "${SUMMARYFILENAME}" != "" ]
-then
-	echo "passed=${TNtcpass}, failed=${TNtcfail}, ignored=${TNtcignore}" > "${SUMMARYFILENAME}"
-fi
 ADDITIONALSTRING=""
+ADDITIONALSUMMARY=""
 if (( ${COUNTNEGATIVE} == 1 ))
 then
 	total=$((TNtcpass+TNtcfail+TNtcignore))
 	pos=$((total-TNtcneg))
 	ADDITIONALSTRING="${ADDITIONALSTRING} | Positive: ${pos} / Negative: ${TNtcneg}"
+	ADDITIONALSUMMARY="${ADDITIONALSUMMARY}, negative=${TNtcneg}"
+fi
+
+if [ "${SUMMARYFILENAME}" != "" ]
+then
+	echo "passed=${TNtcpass}, failed=${TNtcfail}, ignored=${TNtcignore}${ADDITIONALSUMMARY}" > "${SUMMARYFILENAME}"
 fi
 if (( ${TNgroupfail} == 0 ))
 then
