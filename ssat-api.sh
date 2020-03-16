@@ -95,7 +95,12 @@ function report() {
 	else
 		_ignore=$((_fail-_criticalFail))
 		_fail=${_criticalFail}
-		writef "${_cases},${_pass},${_fail},${_ignore}"
+		if [[ "${COUNTNEGATIVE}" -eq "1" ]]
+		then
+			writef "${_cases},${_pass},${_fail},${_ignore},${_neg}"
+		else
+			writef "${_cases},${_pass},${_fail},${_ignore}"
+		fi
 		echo "${ResultLog}" > ${_filename}
 		printf "\n${_filename}\n"
 	fi
@@ -115,6 +120,7 @@ function testInit() {
 	_fail=0
 	_criticalFail=0
 	_cases=0
+	_neg=0
 	_filename=$(mktemp)
 	_group=`basename "$1"`
 	if [[ "${#_group}" -eq "0" ]]
@@ -148,6 +154,14 @@ function testResult() {
 	else
 		if [[ "${1}" -eq "1" ]]; then
 			_good=1
+		fi
+	fi
+
+	if [[ "${COUNTNEGATIVE}" -eq "1" ]]
+	then
+		if [[ "${2}\n" =~ "${COUNTNEGATIVEPOSTFIX}\n" ]]
+		then
+			_neg=$((_neg+1))
 		fi
 	fi
 

@@ -42,6 +42,8 @@ SUMMARYFILENAME=""
 #
 SILENT=1
 PROGRESS=0
+COUNTNEGATIVE=0
+COUNTNEGATIVEPOSTFIX=""
 VALGRIND=0
 date=`date +"%b %d %Y"`
 
@@ -92,7 +94,7 @@ do
 	key="$1"
 	case $key in
 	-h|--help)
-		printf "usage: ${BASENAME} [--help] [<path>] [--testcase <filename>] [--nocolor] [--showstdout] [--createtemplate]\n\n"
+		printf "usage: ${BASENAME} [--help] [<path>] [--testcase <filename>] [--nocolor] [--showstdout] [--createtemplate] [--countnegative <postfix>] \n\n"
 		printf "These are common ${Red}ssat${NC} commands used:\n\n"
 		printf "Test all test-groups in the current ($(pwd)) directory, recursively\n"
 		printf "    (no options specified)\n"
@@ -127,6 +129,11 @@ do
 		printf "    --help or -h\n"
 		printf "    $ ${BASENAME} --help \n"
 		printf "\n"
+		printf "Count negative test cases with the given postfix\n"
+		printf "    --countnegative or -cn\n"
+		printf "    $ ${BASENAME} --countnegative _n\n"
+		printf "    $ ${BASENAME} -cn _n\n"
+		printf "\n"
 		printf "Write result summary as a file\n"
 		printf "    --summary <filename>\n"
 		printf "\n\n"
@@ -138,6 +145,17 @@ do
 	;;
 	-t|--testcase)
 	TESTCASE="$2"
+	shift
+	shift
+	;;
+	-cn|--countnegative)
+	COUNTNEGATIVE=1
+	COUNTNEGATIVEPOSTFIX="$2"
+	if [[ "${COUNTNEGATIVEPOSTFIX}" == "" ]]
+	then
+		printf "${BASENAME} -cn or --countnegative requires postfix.\n\n"
+		exit -2
+	fi
 	shift
 	shift
 	;;
@@ -179,6 +197,7 @@ TNtc=0
 TNtcpass=0
 TNtcfail=0
 TNtcignore=0
+TNtcneg=0
 TNgroup=0
 TNgrouppass=0
 TNgroupfail=0
@@ -192,6 +211,7 @@ do
 	Ntc=0
 	Npass=0
 	Nfail=0
+	Nneg=0
 	tmpfile=$(mktemp)
 
 	if [[ "$PROGRESS" -eq "1" ]]; then
@@ -214,12 +234,14 @@ do
 	Npass=$2
 	Nfail=$3
 	Nignore=$4
+	Nneg=$5
 	unset IFS
 
 	TNtc=$((TNtc+Ntc))
 	TNtcpass=$((TNtcpass+Npass))
 	TNtcfail=$((TNtcfail+Nfail))
 	TNtcignore=$((TNtcignore+Nignore))
+	TNtcneg=$((TNtcneg+Nneg))
 
 	TNgroup=$((TNgroup+1))
 	if [[ "$retcode" -eq "0" ]]
@@ -245,14 +267,21 @@ if [ "${SUMMARYFILENAME}" != "" ]
 then
 	echo "passed=${TNtcpass}, failed=${TNtcfail}, ignored=${TNtcignore}" > "${SUMMARYFILENAME}"
 fi
+ADDITIONALSTRING=""
+if (( ${COUNTNEGATIVE} == 1 ))
+then
+	total=$((TNtcpass+TNtcfail+TNtcignore))
+	pos=$((total-TNtcneg))
+	ADDITIONALSTRING="${ADDITIONALSTRING} | Positive: ${pos} / Negative: ${TNtcneg}"
+fi
 if (( ${TNgroupfail} == 0 ))
 then
 	printf "${LightGreen}[PASSED] ${Blue}All Test Groups (${TNgroup}) Passed!${NC}\n"
-	printf "         TC Passed: ${TNtcpass} / Failed: ${TNtcfail} / Ignored: ${TNtcignore}\n\n";
+	printf "         TC Passed: ${TNtcpass} / Failed: ${TNtcfail} / Ignored: ${TNtcignore} ${ADDITIONALSTRING}\n\n";
 	exit 0
 else
 	printf "${Red}[FAILED] ${Purple}There are failed test groups! (${TNgroupfail})${NC}\n"
-	printf "         TC Passed: ${TNtcpass} / Failed: ${TNtcfail} / Ignored: ${TNtcignore}\n\n";
+	printf "         TC Passed: ${TNtcpass} / Failed: ${TNtcfail} / Ignored: ${TNtcignore} ${ADDITIONALSTRING}\n\n";
 	exit 1
 fi
 # gather reports & publish them.
