@@ -233,6 +233,10 @@ function callTestExitEq() {
 function callCompareTest() {
 	# Try cmp.
 	output=0
+	if [[ ! -f "$1" || ! -f "$2" ]]; then
+		testResult $output "$3" "$4" $6
+		return
+	fi
 	command -v cmp
 	# If cmp is symlink, then it could be from busybox and it does not support "-n" option
 	if [[ $? == 0 && ! -L $(which cmp) ]]
