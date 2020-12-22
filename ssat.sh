@@ -41,7 +41,7 @@ SUMMARYFILENAME=""
 
 #
 SILENT=1
-PROGRESS=0
+PROGRESSLOGLEVEL=0
 COUNTNEGATIVE=0
 COUNTNEGATIVEPOSTFIX=""
 VALGRIND=0
@@ -120,7 +120,12 @@ do
 		printf "    --createtemplate or -c\n"
 		printf "\n"
 		printf "Show progress during execution\n"
-		printf "    --progress or -p\n"
+		printf "    --progress or -p or -p=(0,1,9)\n"
+		printf "        '0' : Do not print logs in progress. If -p is not given, -p=0 is assumed.\n"
+		printf "        '1' : Print test group names only in progress.\n"
+		printf "        '2-9' : Print all logs in progress. If -p is given without numbers, -p=9 is used.\n"
+		printf "     $ ${BASENAME} -p=1\n"
+		printf "     $ ${BASENAME} --progress=9 (equal to --progress) \n"
 		printf "\n"
 		printf "Enable valgrind to perform memcheck\n"
 		printf "    --enable-valgrind or -vg\n"
@@ -167,8 +172,15 @@ do
 	createTemplate
 	shift
 	;;
-	-p|--progress)
-	PROGRESS=1
+	-p|-p=*|--progress|--progress=*)
+	if [[ $key == "-p" || $key == "--progress" ]]
+	then
+	    PROGRESSLOGLEVEL=9
+	    printf "Progress Log level is not given. Print all logs in progress.\n"
+	else
+	    PROGRESSLOGLEVEL=${key#*=}
+	    printf "Given progress log level is ${PROGRESSLOGLEVEL}.\n"
+	fi
 	shift
 	;;
 	-vg|--enable-valgrind)
@@ -214,7 +226,7 @@ do
 	Nneg=0
 	tmpfile=$(mktemp)
 
-	if [[ "$PROGRESS" -eq "1" ]]; then
+	if [[ ${PROGRESSLOGLEVEL} -ge 1 ]]; then
 		printf "[Starting] $CASENAME\n"
 	fi
 	pushd $CASEBASEPATH > /dev/null
