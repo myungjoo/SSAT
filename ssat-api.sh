@@ -142,7 +142,7 @@ function testInit() {
 function testResult() {
 	if [[ ${PROGRESSLOGLEVEL} -gt 1 ]]
 	then
-		echo "Case ${2}(${3}) report ${1}" > /dev/stderr
+		echo "Case ${2}(${3}) report ${1}" >&2
 	fi
 
 	_cases=$((_cases+1))
