@@ -1,3 +1,9 @@
+ssat (1.2.0) stable; urgency=medium
+
+  * Progress and error logs revised.
+
+ -- MyungJoo Ham <myungjoo.ham@samsung.com>  Mon, 22 Feb 2021 17:23:00 +0900
+
 ssat (1.1.0) stable; urgency=medium
 
   * A lot of updates have been done (new features)
