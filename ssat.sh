@@ -31,7 +31,7 @@
 ## - OUTPUT           :  Summary of test results to stdout. Exit code of 0 if success, non-zero if not success.
 ## @section CREATEINFO   Code information
 ## - Initial date     :  2018/06/22
-## - Version          :  1.0.0
+## - Version          :  1.2.0
 
 TARGET=$(pwd)
 BASEPATH=`dirname "$0"`

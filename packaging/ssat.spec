@@ -1,7 +1,7 @@
 Name:		ssat
 Summary:	Shell Script Automated Tester
-Version:	1.1.0
-Release:	1rc1
+Version:	1.2.0
+Release:	1
 Group:		Development/Tools
 Packager:	MyungJoo Ham <myungjoo.ham@samsung.com>
 License:	Apache-2.0
