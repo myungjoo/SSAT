@@ -306,14 +306,24 @@ function callCompareTest() {
 ## @param $3 set 1 if this is not critical (don't care if it's pass or fail)
 ## @param $4 set 1 if this passes if gstLaunch fails.
 ## @param $5 set 1 to enable PERFORMANCE test.
+## @param $6 set a positive value (seconds) to enable timeout mode.
 function gstTest() {
 	if [[ "$VALGRIND" -eq "1" ]]; then
 		calloutputprefix='valgrind --track-origins=yes'
 	fi
-	if [[ "${SILENT}" -eq "1" ]]; then
-		calloutput=$(eval $calloutputprefix gst-launch-1.0 -f -q $1 &> /dev/null)
+
+	if [[ "${6}" -gt "0" ]]; then
+		if [[ "${SILENT}" -eq "1" ]]; then
+			calloutput=$(eval timeout ${6} $calloutputprefix gst-launch-1.0 -f -q $1 &> /dev/null)
+		else
+			calloutput=$(eval timeout ${6} $calloutputprefix gst-launch-1.0 -f -q $1)
+		fi
 	else
-		calloutput=$(eval $calloutputprefix gst-launch-1.0 -f -q $1)
+		if [[ "${SILENT}" -eq "1" ]]; then
+			calloutput=$(eval $calloutputprefix gst-launch-1.0 -f -q $1 &> /dev/null)
+		else
+			calloutput=$(eval $calloutputprefix gst-launch-1.0 -f -q $1)
+		fi
 	fi
 
 	retcode=$?
