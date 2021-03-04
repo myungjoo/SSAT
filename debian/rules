@@ -16,5 +16,7 @@
 %:
 	dh $@
 
+override_dh_auto_clean:
+	rm -f ssat
 override_dh_auto_install:
 	ln -s ssat.sh ssat
