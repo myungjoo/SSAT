@@ -10,6 +10,7 @@ Source1001:	ssat.manifest
 BuildArch:	noarch
 
 Requires:	bash
+Requires:	perl
 
 %description
 SSAT provides testing environment for shell scripts with Apache-2.0 license.

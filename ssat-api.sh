@@ -312,7 +312,20 @@ function gstTest() {
 		calloutputprefix='valgrind --track-origins=yes'
 	fi
 
+	TIMEOUT_AVAIL=1
 	if [[ "${6}" -gt "0" ]]; then
+		if ! command -v timeout &> /dev/null
+		then
+			if command -v perl &> /dev/null
+			then
+				timeout() { perl -e 'alarm shift; exec @ARGV' "$@"; }
+			else
+				TIMEOUT_AVAIL=0
+			fi
+		fi
+	fi
+
+    if [[ "${6}" -gt "0" && $TIMEOUT_AVAIL -eq 1 ]]; then
 		if [[ "${SILENT}" -eq "1" ]]; then
 			calloutput=$(eval timeout ${6} $calloutputprefix gst-launch-1.0 -f -q $1 &> /dev/null)
 		else
