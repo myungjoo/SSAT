@@ -368,6 +368,62 @@ function gstTest() {
 	fi
 }
 
+
+## @fn gstTestBackground()
+## @brief Execute gst-launch in background with given arguments.
+## @param $1 gst-launch-1.0 Arguments, with pipeline description at the end. The pipeline should have async=false for sink elements (skip preroll!).
+## @param $2 test case ID
+## @param $3 set 1 if this is not critical (don't care if it's pass or fail)
+## @param $4 set 1 if this passes if launching the pipeline fails. (pass if timeout expires)
+## @param $5 set timeout for launching the pipeline in seconds (not the pipeline EOS). default = 10.
+## @return $pid The PID of the background gstreamer pipeline.
+function gstTestBackground() {
+	local marker=$(mktemp)
+	local timeout=10
+	local launchSuccess
+	local launchFail
+	local pipeline
+
+	if [ "$4" == "1" ]; then
+		launchSuccess=0
+		launchFail=1
+	else
+		launchSuccess=1
+		launchFail=0
+	fi
+	if [ "$5" == "" ]; then
+		# no changes in timeout. do nothing
+		sleep 0
+	else
+		if [ $5 -gt 0 ]; then
+			timeout=$5
+		else
+			# ignore if it's < 1. do nothing
+			sleep 0
+		fi
+	fi
+
+	pipeline="$1   videotestsrc num-buffers=1 ! video/x-raw,width=4,height=4,format=RGB ! filesink location=${marker}"
+	gst-launch-1.0 $pipeline &
+	pid=$!
+
+	for i in $(seq 1 ${timeout})
+	do
+		if [ -f "$marker" ]; then
+			markersize=$(stat -c%s ${marker})
+			if [ $markersize -ge 48 ]; then
+				testResult ${launchSuccess} $2 "gst-launch in background of case $2" $3
+				rm ${marker}
+				return $pid
+			fi
+		fi
+		sleep 1
+	done
+	rm ${marker}
+	testResult ${launchFail} $2 "gst-launch in background of case $2" $3
+	return ${pid}
+}
+
 ## @fn convertBMP2PNG()
 ## @brief Convert all *.bmp to *.png in the current directory
 ## @todo macronice "bmp2png" searching.
