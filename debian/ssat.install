@@ -1,3 +1,4 @@
 ssat.sh usr/bin
 ssat-api.sh usr/bin
 ssat usr/bin
+/usr/bin/bmp2png
