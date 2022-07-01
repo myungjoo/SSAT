@@ -2,7 +2,7 @@ Source: ssat
 Section: devel
 Priority: optional
 Maintainer: MyungJoo Ham <myungjoo.ham@samsung.com>
-Build-Depends: bash, debhelper (>=9)
+Build-Depends: bash, debhelper (>=9), meson (>=0.50), ninja-build, libpng-dev, libglib2.0-dev,
 Standards-Version: 3.9.6
 Homepage: https://github.com/myungjoo/SSAT/
 

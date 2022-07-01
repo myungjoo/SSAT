@@ -16,7 +16,14 @@
 %:
 	dh $@
 
+override_dh_auto_configure:
+	mkdir -p build
+	meson --buildtype=plain --prefix=/usr --bindir=bin build util
+override_dh_auto_build:
+	ninja -C build
 override_dh_auto_clean:
 	rm -f ssat
+	rm -f build
 override_dh_auto_install:
+	DESTDIR=$(CURDIR)/debian/tmp ninja -C build install
 	ln -s ssat.sh ssat
