@@ -45,6 +45,7 @@ PROGRESSLOGLEVEL=0
 COUNTNEGATIVE=0
 COUNTNEGATIVEPOSTFIX=""
 VALGRIND=0
+VALGRIND_SUPPRESSION=""
 date=`date +"%b %d %Y"`
 
 ## @fn createTemplate()
@@ -94,7 +95,7 @@ do
 	key="$1"
 	case $key in
 	-h|--help)
-		printf "usage: ${BASENAME} [--help] [<path>] [--testcase <filename>] [--nocolor] [--showstdout] [--createtemplate] [--countnegative <postfix>] \n\n"
+		printf "usage: ${BASENAME} [--help] [<path>] [--testcase <filename>] [--nocolor] [--showstdout] [--createtemplate] [--countnegative <postfix>] [--enable-valgrind] [--valgrind-suppression <filepath>]\n\n"
 		printf "These are common ${Red}ssat${NC} commands used:\n\n"
 		printf "Test all test-groups in the current ($(pwd)) directory, recursively\n"
 		printf "    (no options specified)\n"
@@ -129,6 +130,11 @@ do
 		printf "\n"
 		printf "Enable valgrind to perform memcheck\n"
 		printf "    --enable-valgrind or -vg\n"
+		printf "\n"
+		printf "Suppress valgrind errors with the given suppression file\n"
+		printf "    --valgrind-suppression <path to the suppression file>\n"
+		printf "    or \n"
+		printf "    -vs <path to the suppression file>\n"
 		printf "\n"
 		printf "Shows this message\n"
 		printf "    --help or -h\n"
@@ -185,6 +191,11 @@ do
 	;;
 	-vg|--enable-valgrind)
 	VALGRIND=1
+	shift
+	;;
+	-vs|--valgrind-suppression)
+	VALGRIND_SUPPRESSION=" --suppressions=$2 "
+	shift
 	shift
 	;;
 	--summary)
