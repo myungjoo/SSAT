@@ -309,7 +309,7 @@ function callCompareTest() {
 ## @param $6 set a positive value (seconds) to enable timeout mode.
 function gstTest() {
 	if [[ "$VALGRIND" -eq "1" ]]; then
-		calloutputprefix='valgrind --track-origins=yes'
+		calloutputprefix="valgrind --track-origins=yes ${VALGRIND_SUPPRESSION}"
 	fi
 
 	TIMEOUT_AVAIL=1
