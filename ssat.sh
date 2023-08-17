@@ -31,7 +31,7 @@
 ## - OUTPUT           :  Summary of test results to stdout. Exit code of 0 if success, non-zero if not success.
 ## @section CREATEINFO   Code information
 ## - Initial date     :  2018/06/22
-## - Version          :  1.2.0
+## - Version          :  1.4.0
 
 TARGET=$(pwd)
 TARGET_ASSIGNED=0
@@ -39,6 +39,7 @@ BASEPATH=`dirname "$0"`
 BASENAME=`basename "$0"`
 TESTCASE="runTest.sh"
 SUMMARYFILENAME=""
+VERSION="1.4.0"
 
 #
 SILENT=1
@@ -96,7 +97,7 @@ do
 	key="$1"
 	case $key in
 	-h|--help)
-		printf "usage: ${BASENAME} [--help] [<path>] [--testcase <filename>] [--nocolor] [--showstdout] [--createtemplate] [--countnegative <postfix>] [--enable-valgrind] [--valgrind-suppression <filepath>]\n\n"
+		printf "usage: ${BASENAME} [--help] [<path>] [--testcase <filename>] [--nocolor] [--showstdout] [--createtemplate] [--countnegative <postfix>] [--enable-valgrind] [--valgrind-suppression <filepath>] [--version]\n\n"
 		printf "These are common ${Red}ssat${NC} commands used:\n\n"
 		printf "Test all test-groups in the current ($(pwd)) directory, recursively\n"
 		printf "    (no options specified)\n"
@@ -148,6 +149,9 @@ do
 		printf "\n"
 		printf "Write result summary as a file\n"
 		printf "    --summary <filename>\n"
+		printf "\n"
+		printf "Show the version\n"
+		printf "    --version or -v\n"
 		printf "\n\n"
 		exit 0
 	;;
@@ -202,6 +206,11 @@ do
 	--summary)
 	SUMMARYFILENAME="$2"
 	shift
+	shift
+	;;
+	--version|-v)
+	printf "${VERSION}\n"
+	exit 0
 	shift
 	;;
 	*) # Unknown, which is probably target (the path to root-dir of test groups).
