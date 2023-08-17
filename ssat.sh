@@ -34,6 +34,7 @@
 ## - Version          :  1.2.0
 
 TARGET=$(pwd)
+TARGET_ASSIGNED=0
 BASEPATH=`dirname "$0"`
 BASENAME=`basename "$0"`
 TESTCASE="runTest.sh"
@@ -193,7 +194,13 @@ do
 	shift
 	;;
 	*) # Unknown, which is probably target (the path to root-dir of test groups).
-	TARGET="$1"
+	# If this is the second occurrence, ignore it.
+	# Assume that the previous string is path and the later string is an invalid argument.
+	if [ $TARGET_ASSIGNED -eq 0 ]
+	then
+		TARGET="$1"
+		TARGET_ASSIGNED=1
+	fi
 	shift
 	esac
 done
