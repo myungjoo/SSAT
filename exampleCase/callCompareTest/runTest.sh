@@ -57,6 +57,7 @@ expectNoMatch long.dat prefix.dat 1 1-3_n "mode 1: a test run shorter than the g
 
 callCompareTest long.dat prefix.dat 2-1 "mode 2: test run is a prefix of the golden" 2 0
 expectNoMatch long.dat mismatch.dat 2 2-2_n "mode 2: a difference inside the compared range is detected"
+expectNoMatch prefix.dat long.dat 2 2-3_n "mode 2: a golden shorter than the test run is detected"
 
 callCompareTest long.dat long_copy.dat 3-1 "mode 0: identical files" 0 0
 expectNoMatch prefix.dat long.dat 0 3-2_n "mode 0: a prefix is not accepted"
@@ -66,6 +67,9 @@ expectNoMatch mismatch.dat long.dat 5 4-2_n "mode N: a difference within N bytes
 
 expectNoMatch nosuchfile.dat long.dat 1 5-1_n "a missing file is detected"
 
-rm -f long.dat prefix.dat mismatch.dat long_copy.dat
+: > empty.dat
+callCompareTest empty.dat long.dat 6-1 "mode 1: an empty golden compares nothing" 1 0
+
+rm -f long.dat prefix.dat mismatch.dat long_copy.dat empty.dat
 
 report
