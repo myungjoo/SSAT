@@ -245,57 +245,38 @@ function callTestExitEq() {
 ## @param $5 0 if the size is expected to be equal as well. 1 if golden (result 1) might be smaller (will ignore rest of result 2). 2 if the opposite of 1. If $5 > 2, it denotes the max size of compared bytes. (compare the first $5 bytes only)
 ## @param $6 set 1 if this is not critical (don't care if it's pass or fail)_
 function callCompareTest() {
-	# Try cmp.
+	local limit
 	output=0
 	if [[ ! -f "$1" || ! -f "$2" ]]; then
 		testResult $output "$3" "$4" $6
 		return
 	fi
-	command -v cmp
-	# If cmp is symlink, then it could be from busybox and it does not support "-n" option
-	if [[ $? == 0 && ! -L $(which cmp) ]]
-	then
-		# use cmp
-		if (( $5 == 0 )); then
-			# Size should be same as well.
-			cmp $1 $2
-			output=$?
-		elif (( $5 == 1 )); then
-			# Compare up to the size of golden
-			cmp -n `${StatCmd_GetSize} $1` $1 $2
-			output=$?
-		elif (( $5 == 2 )); then
-			# Compare up to the size of test-run
-			cmp -n `${StatCmd_GetSize} $2` $1 $2
-			output=$?
-		else
-			# Compare up to $5 bytes.
-			cmp -n `${StatCmd_GetSize} $5` $1 $2
-			output=$?
-		fi
-		if (( ${output} == 0 )); then
-			output=1
-		else
-			output=0
-		fi
-		testResult $output "$3" "$4" $6
+
+	if (( $5 == 0 )); then
+		cmp "$1" "$2"
+		output=$?
 	else
-	    # use internal logic (slower!)
-	    bufsize=`${StatCmd_GetSize} $1`
-	    if (( $5 == 2 )); then
-		bufsize=`${StatCmd_GetSize} $2`
-	    else
-		bufsize=$5
-	    fi
-	    diff <(dd bs=1 count=$bufsize if=$1 &>/dev/null) <(dd bs=1 count=$bufsize if=$2 &>/dev/null)
-	    output=$?
-	    if (( ${output} == 0 )); then
-		output=1
-	    else
-		output=0
-	    fi
-	    testResult $output "$3" "$4" $6
+		if (( $5 == 1 )); then
+			limit=`${StatCmd_GetSize} "$1"`
+		elif (( $5 == 2 )); then
+			limit=`${StatCmd_GetSize} "$2"`
+		else
+			limit=$5
+		fi
+		# Do not use "cmp -n": BSD cmp decides whether the files differ from
+		# their full sizes, so it reports EOF and exits non-zero on any size
+		# mismatch even though -n limited the comparison. Truncate both sides
+		# to the limit instead.
+		cmp <(head -c "$limit" "$1") <(head -c "$limit" "$2")
+		output=$?
 	fi
+
+	if (( ${output} == 0 )); then
+		output=1
+	else
+		output=0
+	fi
+	testResult $output "$3" "$4" $6
 }
 
 ## @fn gstTest()
