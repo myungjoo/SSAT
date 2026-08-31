@@ -32,6 +32,10 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-good
           fi
+      - name: warm the gstreamer plugin registry
+        # The first gst-launch pays for building the registry, which on macOS
+        # takes longer than the timeout gstTestBackground's example passes it.
+        run: gst-inspect-1.0 > /dev/null
       - name: run the example test groups
         # An absolute path is required: ssat.sh enters the group directory
         # before sourcing runTest.sh, so a relative path no longer resolves.
