@@ -1,0 +1,38 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exampleCase:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        # macOS is not optional here. Several API functions build on utilities
+        # whose BSD and GNU behaviour differ, and that is exactly what the
+        # example groups pin.
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v5
+      - name: install gstreamer
+        run: |
+          if [ "${RUNNER_OS}" = "macOS" ]; then
+            brew install gstreamer
+          else
+            sudo apt-get update
+            sudo apt-get install -y gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-good
+          fi
+      - name: run the example test groups
+        # An absolute path is required: ssat.sh enters the group directory
+        # before sourcing runTest.sh, so a relative path no longer resolves.
+        run: bash ssat.sh "$(pwd)/exampleCase"

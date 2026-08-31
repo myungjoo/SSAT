@@ -263,12 +263,18 @@ function callCompareTest() {
 		else
 			limit=$5
 		fi
-		# Do not use "cmp -n": BSD cmp decides whether the files differ from
-		# their full sizes, so it reports EOF and exits non-zero on any size
-		# mismatch even though -n limited the comparison. Truncate both sides
-		# to the limit instead.
-		cmp <(head -c "$limit" "$1") <(head -c "$limit" "$2")
-		output=$?
+		if (( ${limit} == 0 )); then
+			# Nothing to compare. Keep saying "equal", as cmp -n 0 did, so
+			# that this portability fix does not change any verdicts.
+			output=0
+		else
+			# Do not use "cmp -n": BSD cmp decides whether the files differ
+			# from their full sizes, so it reports EOF and exits non-zero on
+			# any size mismatch even though -n limited the comparison.
+			# Truncate both sides to the limit instead.
+			cmp <(head -c "$limit" "$1") <(head -c "$limit" "$2")
+			output=$?
+		fi
 	fi
 
 	if (( ${output} == 0 )); then
