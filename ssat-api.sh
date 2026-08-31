@@ -397,8 +397,8 @@ function gstTestBackground() {
 	for i in $(seq 1 ${timeout})
 	do
 		if [ -f "$marker" ]; then
-			markersize=$(stat -c%s ${marker})
-			if [ $markersize -ge 48 ]; then
+			markersize=$(${StatCmd_GetSize} ${marker})
+			if [ "${markersize}" -ge 48 ]; then
 				testResult ${launchSuccess} $2 "gst-launch in background of case $2" $3
 				rm ${marker}
 				return $pid
