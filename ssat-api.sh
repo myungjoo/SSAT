@@ -54,7 +54,7 @@ if [[ "${KernelName}" == "Darwin" ]]; then
 	StatCmd_GetSize="stat -f %z"
 	SO_EXT="dylib"
 else
-	StatCmd_GetSize="stat --printf=%s"
+	StatCmd_GetSize="stat -c %s"
 	SO_EXT="so"
 fi
 
