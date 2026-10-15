@@ -34,9 +34,7 @@ ninja -C build
 mkdir -p %{buildroot}%{_bindir}
 install -p -m 0755 ssat.sh %{buildroot}%{_bindir}/
 install -p -m 0644 ssat-api.sh %{buildroot}%{_bindir}/
-pushd %{buildroot}%{_bindir}
-ln -s ssat.sh ssat
-popd
+(cd %{buildroot}%{_bindir} && ln -s ssat.sh ssat)
 DESTDIR=%{buildroot} ninja -C build install
 
 %files
